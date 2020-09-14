@@ -10,6 +10,8 @@
 #'  all available languages and returns them as data frame.
 #'
 #' @param file char path to exported LimeSurvey Survey Structure *.lss file
+#' @param strip_html logical. Default set to \code{TRUE} will remove any simple HTML tags from the labels. Otherwise leaves 
+#'  label string as exported from LS. 
 #'
 #' @return data frame containing the following fields:
 #'  \itemize{
@@ -25,7 +27,7 @@
 #'
 #' @export extract_question_labels
 #'
-extract_question_labels <- function(file){
+extract_question_labels <- function(file, strip_html=T){
 
     doc <- xml2::read_xml(file)
 
@@ -37,7 +39,8 @@ extract_question_labels <- function(file){
             list(
                 qid=xml2::xml_find_first(x, "qid") %>% xml2::xml_text(),
                 qcode=xml2::xml_find_first(x, "title") %>% xml2::xml_text(),
-                qtype=xml2::xml_find_first(x, "type") %>% xml2::xml_text()
+                qtype=xml2::xml_find_first(x, "type") %>% xml2::xml_text(),
+                qoth=xml2::xml_find_first(x, "other") %>% xml2::xml_text()
             )
         })
 
@@ -48,7 +51,8 @@ extract_question_labels <- function(file){
                 pid=xml2::xml_find_first(x, "parent_qid") %>% xml2::xml_text(),
                 qid=xml2::xml_find_first(x, "qid") %>% xml2::xml_text(),
                 qtxt=xml2::xml_find_first(x, "title") %>% xml2::xml_text(),
-                qtype=xml2::xml_find_first(x, "type") %>% xml2::xml_text()
+                qtype=xml2::xml_find_first(x, "type") %>% xml2::xml_text(),
+                qoth=xml2::xml_find_first(x, "other") %>% xml2::xml_text()
             )
         })
 
@@ -74,11 +78,17 @@ extract_question_labels <- function(file){
     # merge questions and subquestions together
     df_question_labels <- df_que %>%
         dplyr::full_join(df_sub, by=c("qid"="pid", "lang")) %>%
-        dplyr::rename(subid = qid.y, qtype=qtype.x, subqcode=qtxt.x, subqtxt=qtxt.y) %>%
+        dplyr::rename(subid = qid.y, qtype=qtype.x, subqcode=qtxt.x, subqtxt=qtxt.y, qoth=qoth.x) %>%
         dplyr::mutate(onecode = if_else(!is.na(subqcode), paste0(qcode,".",subqcode,"."), qcode)) %>%
-        dplyr::select(-qtype.y)
+        dplyr::select(-qtype.y, -qoth.y)
+    
+    # remove html tags from string
+    if (strip_html){
+        df_question_labels$qtxt <- stringr::str_remove_all(df_question_labels$qtxt, "<.*?>")
+        df_question_labels$subqtxt <- stringr::str_remove_all(df_question_labels$subqtxt, "<.*?>")
+    }
 
-    avail_lang <- paste(unique(df_question_labels$lang),sep=" ")
+    avail_lang <- paste(unique(df_question_labels$lang),sep="-", collapse = "-")
 
     message("Available languages: ", avail_lang)
 

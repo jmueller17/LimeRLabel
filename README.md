@@ -2,9 +2,10 @@
 
 LimeRLabel faciliates importing and labelling LimeSurvey result data into R. 
 
-Getting data into R from LimeSurvey is still a rather cumbersume process, especially when questionnairs have multiple language versions. Currently two options are available. First, users can export manually two files (an R syntax file and the CSV data file) from within LimeSurvey as long as the pre-installed "ExportR" plugin is enabled. Both files need then to be combined manually from within R in order to produce a data frame with variable lables. In case of a survey conducted in several languages, this methods breaks down as the ExportR plugin has a bug. The exported labels always use the default language of the questionnaire. Generating reports in any other language than the default one does not work. Second, the Remote API for LimeSurvey offers the possibility to directly download the result dataset into R via the [limer](https://github.com/cloudyr/limer) or [LimeRick](https://github.com/k127/LimeRick) package. Although the remote api call can specify the language of the dataset, the downloaded CSV only contains the variable lables of actual responses and not all possible answer choices. Since there is no R syntax file available for download, the resulting data set contains incomplete variable lables. 
+Getting data into R from LimeSurvey is still a rather cumbersume process, especially when questionnairs have multiple language versions. Currently two options are available. First, users can export manually two files (an R syntax file and the CSV data file) from within LimeSurvey as long as the pre-installed "ExportR" plugin is enabled. Both files need then to be combined manually from within R in order to produce a data frame with variable lables. In case of a survey conducted in several languages, this methods breaks down as the ExportR plugin has a [bug](https://bugs.limesurvey.org/view.php?id=16626). The exported labels always use the default language of the questionnaire no matter which other language option has been selected during the export settings dialog. Generating reports in any other language than the default one does not work. Second, the Remote API for LimeSurvey offers the possibility to directly download the result dataset into R via the [limer](https://github.com/cloudyr/limer) or [LimeRick](https://github.com/k127/LimeRick) package. Although the remote api call can specify the language of the dataset, the downloaded CSV only contains the variable lables of actual responses and not all possible answer choices. Since there is no R syntax file available for download, the resulting data set contains incomplete variable lables. 
 
-The LimeRLabel package produces a complete labelled R data frame in any of the available languages of the questionnaire. It combines the LimeSurvey Survey Structure file (*.lss) archive and combines it with the CSV data downloaded either manually or via the Remove API calls. A correctly labelled data frame is key to produce efficiently the corresponding graphics and frequency table in any of the available languages. 
+The LimeRLabel package addesses these issues. It produces a complete labelled R data frame in any of the available languages of the questionnaire. It does so by combining the LimeSurvey Survey Structure file (*.lss) archive with the CSV data downloaded either manually or via the Remove API calls. A correctly labelled data frame is key to produce efficiently the corresponding graphics and frequency table in any of the available languages. 
+
 
 ## Installation
 
@@ -14,10 +15,11 @@ The LimeRLabel package can be downloaded and installed from Github with:
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("jmueller17/LimeRLabel")
 ```
+  
 
-## Usage 
+## Example usage
 
-### Export LimeSurvey Survey Structure 
+### Export LimeSurvey Survey Structure file 
 Export the Survey Structure (Display/export > Survey Structure \*.lss file) and download it to your computer. The *.lss file contains a complete archive of your questionnaire without any respondent data. It provides a convenient form to export and import (or copy) questionnaires in LimeSurvey. It therefore also contains the complete question labels and answer lables in all languages. 
 
 
@@ -53,7 +55,7 @@ question_labels <- extract_question_labels("path/to/limesurvey_survey_xxxxx.lss"
 df.lsdata <- set_question_labels(df.lsdata, question_labels, "en")
 ```
 
-This attaches to each column (variable) a "label" attribute that contains the question text in the specified language. In case a variable represents a sub-question (as used in matrix questions for example where respondents rate specific answer items), the "label" attribute returns the sub-question text. This makese sense for producing correctly labelled likert polts with [sjp.likert()](http://strengejacke.de/sjPlot/reference/sjp.likert.html) which uses the "label" attribute. The parent question can be retrieved with `get_parentlabel()`.   
+This attaches to each column (variable) a "label" attribute that contains the question text in the specified language. In case a variable represents a sub-question (as used in matrix questions for example where respondents rate specific answer items), the "label" attribute returns the sub-question text. This makese sense for producing correctly labelled likert polts with [sjp.likert()](http://strengejacke.de/sjPlot/reference/sjp.likert.html) which uses the "label" attribute. The parent question can be retrieved with `get_parent_label()`.   
 
 Second, read and extract answer labels with `extract_response_labels()`. 
 

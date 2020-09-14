@@ -13,6 +13,8 @@
 #' @param data Data frame of LimeSurvey R result data
 #' @param labels Data frame extracted from LimeSurvey *.lss xml file. See \code{\link{extract_response_labels}}
 #' @param lang char language code
+#' @param othstr string used by LimeSurvey to indicate that response option is "other" (text) which is stored in an 
+#'  additional variable. Default value by LS is "-oth-", but could be different. 
 #'
 #' @details Answer labels that are "Other" with text field have their own variable names of the form "questioncode.other" and
 #' question type "!" (dropdown)
@@ -23,7 +25,7 @@
 #'
 #' @export set_response_labels
 #'
-set_response_labels <- function(data, labels, plang){
+set_response_labels <- function(data, labels, plang, othstr="-oth-"){
 
 
     cnames <- colnames(data)
@@ -47,6 +49,9 @@ set_response_labels <- function(data, labels, plang){
 
         # retrieve question type of variable
         qtype <- attr(data[,pcode], "lsqtype")
+        
+        # question has "other" option? 
+        qother <-  attr(data[,pcode], "lsother")
 
         # in case of metadata columns, skype factor conversion
         qtype <- if_else(is.null(qtype), "skip", qtype)
@@ -64,6 +69,14 @@ set_response_labels <- function(data, labels, plang){
 
         fct_levels <- answers$acode
         fct_labels <- answers$atxt
+
+        # LS exports "Other" options (with text field) as "-oth-" which needs to be assigned 
+        # the correct label
+        if (qother == "Y"){
+            fct_levels <- c(fct_levels, othstr)
+            fct_labels <- c(fct_labels, "Other")
+        }
+                
 
         data[,pcode] <- factor(data[,pcode], levels=fct_levels, labels=fct_labels)
 

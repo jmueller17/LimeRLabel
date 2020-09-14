@@ -1,6 +1,7 @@
 #' @import xml2
 #' @import purrr
 #' @import dplyr
+#' @import stringr
 #'
 #'
 #'
@@ -11,6 +12,8 @@
 #'  all available languages and returns them as data frame.
 #'
 #' @param file char path to exported LimeSurvey Survey Structure *.lss file
+#' @param strip_html logical. Default set to \code{TRUE} will remove any simple HTML tags from the labels. Otherwise leaves 
+#'  label string as exported from LS. 
 #'
 #' @return data frame containing the following fields:
 #'  \itemize{
@@ -24,7 +27,7 @@
 #'
 #' @export extract_response_labels
 #'
-extract_response_labels  <- function(file){
+extract_response_labels  <- function(file, strip_html=T){
 
     doc <- xml2::read_xml(file)
 
@@ -57,8 +60,14 @@ extract_response_labels  <- function(file){
     # construct answer (variable) labels data frame
     df_answer_labels <- aid %>%
         dplyr::left_join(atxt, by="aid")
-
-    message("Following languages are available: ", paste(unique(df_question_labels$lang),sep=" ") )
+    
+    if (strip_html){
+        df_answer_labels$atxt <- stringr::str_remove_all(df_answer_labels$atxt, "<.*?>")
+    }
+    
+    avail_lang <- paste(unique(df_answer_labels$lang),sep="-", collapse = "-")
+    
+    message("Available languages: ", avail_lang)
 
     df_answer_labels
 

@@ -2,6 +2,9 @@
 
 export(extract_question_labels)
 export(extract_response_labels)
+export(get_lsLabel)
+export(get_lsParentlabel)
+export(is_lsSubquestion)
 export(read_gpg)
 export(set_question_labels)
 export(set_response_labels)
