@@ -13,11 +13,14 @@
 #' @param data Data frame of LimeSurvey R result data
 #' @param labels Data frame extracted from LimeSurvey *.lss xml file. See \code{\link{extract_response_labels}}
 #' @param lang char language code
-#' @param othstr string used by LimeSurvey to indicate that response option is "other" (text) which is stored in an 
-#'  additional variable. Default value by LS is "-oth-", but could be different. 
+#' @param other vector of length two. First entry contains LS code used for "Other" entry in variable. Second entry 
+#'  NA will lookup label for given language code, or use English label as default. See details.  
 #'
 #' @details Answer labels that are "Other" with text field have their own variable names of the form "questioncode.other" and
-#' question type "!" (dropdown)
+#' question type "!" (dropdown). 
+#' to indicate that response option is
+#'  "other" (text).  which is stored in an 
+#'  additional variable. Default value by LS is "-oth-", but could be different.
 #'
 #' @return Data frame with value (answer) labels assigned to each variable (column).
 #'
@@ -25,9 +28,16 @@
 #'
 #' @export set_response_labels
 #'
-set_response_labels <- function(data, labels, plang, othstr="-oth-"){
+set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
 
-
+    # "Other" code as used by ls to indicate "other" response option
+    lsOtherCode <- other[1]
+    
+    # "Other" label to be used; lookup i18n entry for given language code. 
+    lsOtherLabel <- if_else(is.na(other[2]), get_i18n(other[1], plang), other[2])
+    
+    
+    # all available colnames 
     cnames <- colnames(data)
 
     # ExportR manual exported data frames have subquestion codes of the format
@@ -73,8 +83,8 @@ set_response_labels <- function(data, labels, plang, othstr="-oth-"){
         # LS exports "Other" options (with text field) as "-oth-" which needs to be assigned 
         # the correct label
         if (qother == "Y"){
-            fct_levels <- c(fct_levels, othstr)
-            fct_labels <- c(fct_labels, "Other")
+            fct_levels <- c(fct_levels, lsOtherCode)
+            fct_labels <- c(fct_labels, lsOtherLabel)
         }
                 
 

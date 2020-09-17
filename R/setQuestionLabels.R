@@ -68,7 +68,7 @@ set_question_labels  <- function(data, labels, plang){
         # if no question label exists use columname, i.e. existing code (applies for example to metainfo columns)
         if (is.null(labelrow) | nrow(labelrow) == 0) {
             attr(data[,pcode], "label") <- pcode
-            warning("No text labels available for: ", pcode)
+            warning("No label found for: ", pcode)
             next
         }
 
