@@ -4,12 +4,15 @@
 \alias{set_response_labels}
 \title{Set response labels on exported LS result data}
 \usage{
-set_response_labels(data, labels, plang)
+set_response_labels(data, labels, plang, other = c("-oth-", NA))
 }
 \arguments{
 \item{data}{Data frame of LimeSurvey R result data}
 
 \item{labels}{Data frame extracted from LimeSurvey *.lss xml file. See \code{\link{extract_response_labels}}}
+
+\item{other}{vector of length two. First entry contains LS code used for "Other" entry in variable. Second entry 
+NA will lookup label for given language code, or use English label as default. See details.}
 
 \item{lang}{char language code}
 }
@@ -26,7 +29,10 @@ LimeSurvey offers the option to export survey result data as an R data frame. Va
 }
 \details{
 Answer labels that are "Other" with text field have their own variable names of the form "questioncode.other" and
-question type "!" (dropdown)
+question type "!" (dropdown). 
+to indicate that response option is
+ "other" (text).  which is stored in an 
+ additional variable. Default value by LS is "-oth-", but could be different.
 }
 \seealso{
 \code{\link{extract_response_labels}}

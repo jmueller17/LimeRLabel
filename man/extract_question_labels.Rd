@@ -4,10 +4,13 @@
 \alias{extract_question_labels}
 \title{Extract Question Labels}
 \usage{
-extract_question_labels(file)
+extract_question_labels(file, strip_html = T)
 }
 \arguments{
 \item{file}{char path to exported LimeSurvey Survey Structure *.lss file}
+
+\item{strip_html}{logical. Default set to \code{TRUE} will remove any simple HTML tags from the labels. Otherwise leaves 
+label string as exported from LS.}
 }
 \value{
 data frame containing the following fields:
