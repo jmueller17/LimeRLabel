@@ -65,9 +65,13 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
 
         # in case of metadata columns, skype factor conversion
         qtype <- if_else(is.null(qtype), "skip", qtype)
+        
+        #save all attributes 
+        ccattr <- attributes(data[,pcode])
 
+        
         # skip columns of metadata (no qid) or
-        # variables are numerical, date or (short, mid, long) text questions
+        # variables are numerical, date or (short, mid, long) text questions no factor assigned
         if (is.null(pqid) | qtype %in% c("skip", "N", "D", "S", "T", "U")) next
 
 
@@ -87,8 +91,13 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
             fct_labels <- c(fct_labels, lsOtherLabel)
         }
                 
-
+        # conver to factor
         data[,pcode] <- factor(data[,pcode], levels=fct_levels, labels=fct_labels)
+        
+        # reassign all attributes
+        #ccattr <- c(ccattr, attributes(data[,pcode]))
+        
+        attributes(data[,pcode]) <- c(ccattr, attributes(data[,pcode]))
 
     }
 

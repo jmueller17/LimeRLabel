@@ -37,10 +37,11 @@ extract_question_labels <- function(file, strip_html=T){
     qid <-xml2::xml_find_all(doc, ".//questions/rows/row") %>%
         purrr::map_df(function(x) {
             list(
-                qid=xml2::xml_find_first(x, "qid") %>% xml2::xml_text(),
-                qcode=xml2::xml_find_first(x, "title") %>% xml2::xml_text(),
-                qtype=xml2::xml_find_first(x, "type") %>% xml2::xml_text(),
-                qoth=xml2::xml_find_first(x, "other") %>% xml2::xml_text()
+                qid=xml2::xml_find_first(x, "qid") %>% xml2::xml_text(),      # question id 
+                qcode=xml2::xml_find_first(x, "title") %>% xml2::xml_text(),  # question code
+                qtype=xml2::xml_find_first(x, "type") %>% xml2::xml_text(),   # question type
+                qoth=xml2::xml_find_first(x, "other") %>% xml2::xml_text(),   # has "other" response option
+                gid=xml2::xml_find_first(x, "gid") %>% xml2::xml_text()      # question group id
             )
         })
 
