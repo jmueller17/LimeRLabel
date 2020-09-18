@@ -1,8 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 # LimeRLabel
 
 LimeRLabel faciliates importing and labelling LimeSurvey result data into R. 
