@@ -12,14 +12,15 @@
 get_i18n <- function(othcode, plang){
     
     # hack for i18n. Redo/fix with gettext
-    i18n <- data.frame(msgid=c("-oth-"), 
-                       en=c("Other"), 
-                       pl=c("Inne"), 
-                       es=c("Otro"), 
-                       de=c("Sonstiges"), 
-                       lt=c("Kita"), 
-                       fr=c("Autre"), 
-                       pt=c("Outro"), stringsAsFactors = F)
+    i18n <- data.frame(msgid=c("-oth-", "checked", "not-checked"), 
+                       en=c("Other", "checked", "not-checked"), 
+                       pl=c("Inne", "wybrany", "nie zaznaczone"), 
+                       es=c("Otro", "selecionado", "no selectionado"), 
+                       de=c("Sonstiges", "Ausgewählt", "Nicht ausgewählt"), 
+                       lt=c("Kita", "pasirinktas", "nepasirinkta"), 
+                       fr=c("Autre", "sélectionné", "non sélectionné"), 
+                       pt=c("Outro", "selecionado", "não selecionado"), 
+                       stringsAsFactors = F)
     
     # code doesn't exist, return code
     othlabel <- othcode

@@ -63,7 +63,7 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
         # question has "other" option? 
         qother <-  attr(data[,pcode], "lsother")
 
-        # in case of metadata columns, skype factor conversion
+        # in case of metadata columns, skip factor conversion
         qtype <- if_else(is.null(qtype), "skip", qtype)
         
         #save all attributes 
@@ -74,19 +74,29 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
         # variables are numerical, date or (short, mid, long) text questions no factor assigned
         if (is.null(pqid) | qtype %in% c("skip", "N", "D", "S", "T", "U")) next
 
+        
+        # Multiple choice question has no labels, just 0,1 ("not check" or "checked", NA)
+        if (qtype == "M"){
+            answers <- data.frame(acode=c(0,1), 
+                                  atxt=c(get_i18n("not-checked"), get_i18n("checked")), 
+                                  stringsAsFactors = F)
+            
+        } else {
 
-        # convert rest of answer values to factors.
-        # retrieve all answers
-        answers <- labels %>%
-            filter(qid == pqid & lang == plang) %>%
-            arrange(aorder)
+            # retrieve all answers
+            answers <- labels %>%
+                filter(qid == pqid & lang == plang) %>%
+                arrange(aorder)
+        
+        }
 
+        
         fct_levels <- answers$acode
         fct_labels <- answers$atxt
 
         # LS exports "Other" options (with text field) as "-oth-" which needs to be assigned 
-        # the correct label
-        if (qother == "Y"){
+        # the correct label. Except: multiple choice which has just 0|1|NA but no -oth- 
+        if (qother == "Y" & qtype != "M"){
             fct_levels <- c(fct_levels, lsOtherCode)
             fct_labels <- c(fct_labels, lsOtherLabel)
         }
