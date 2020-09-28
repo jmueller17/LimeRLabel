@@ -33,8 +33,10 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
     # "Other" code as used by ls to indicate "other" response option
     lsOtherCode <- other[1]
     
+
+    
     # "Other" label to be used; lookup i18n entry for given language code. 
-    lsOtherLabel <- if_else(is.na(other[2]), get_i18n(other[1], plang), other[2])
+    lsOtherLabel <- if_else(is.na(other[2]), get_i18nx(other[1], plang), other[2])
     
     
     # all available colnames 
@@ -78,7 +80,7 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
         # Multiple choice question has no labels, just 0,1 ("not check" or "checked", NA)
         if (qtype == "M"){
             answers <- data.frame(acode=c(0,1), 
-                                  atxt=c(get_i18n("not-checked"), get_i18n("checked")), 
+                                  atxt=c(get_i18nx("not-checked", plang), get_i18nx("checked", plang)), 
                                   stringsAsFactors = F)
             
         } else {

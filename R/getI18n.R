@@ -9,7 +9,7 @@
 #' @return Translated label if code and language exists. English if language not available, or code if 
 #'  language does not exist. 
 #'
-get_i18n <- function(othcode, plang){
+get_i18nx <- function(othcode, plangcode){
     
     # hack for i18n. Redo/fix with gettext
     i18n <- data.frame(msgid=c("-oth-", "checked", "not-checked"), 
@@ -25,11 +25,12 @@ get_i18n <- function(othcode, plang){
     # code doesn't exist, return code
     othlabel <- othcode
     
+
     
     # translation and code exists
-    if (plang %in% colnames(i18n)){
+    if (plangcode %in% colnames(i18n)){
         
-        othlabel <- i18n[which(i18n$msgid==othcode), plang]
+        othlabel <- i18n[which(i18n$msgid==othcode), plangcode]
         
     # translation does not exist, return english        
     } else {
