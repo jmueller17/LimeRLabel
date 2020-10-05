@@ -32,7 +32,6 @@ map_iso3166 <- function(isofrom, isoto, alabels, lqid){
     src_labels <- alabels %>% 
         filter(qid == lqid & lang == isofrom) %>% 
         mutate(isocode = stringr::str_extract(atxt, pattern="\\([A-Z]{2}\\)")) %>% 
-        distinct(isocode, .keep_all = T) %>% 
         select(acode.from=acode, 
                lang.from=lang, 
                isocode=isocode)
