@@ -83,6 +83,13 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
                                   atxt=c(get_i18nx("not-checked", plang), get_i18nx("checked", plang)), 
                                   stringsAsFactors = F)
             
+        # Yes/No question type has no labels. 
+        } else if (qtype == "Y"){
+            answers <- data.frame(acode=c(1,2), 
+                                  atxt = c(get_i18nx("yes", plang), get_i18nx("no", plang)), 
+                                  stringsAsFactors = F)
+            
+            
         } else {
 
             # retrieve all answers
