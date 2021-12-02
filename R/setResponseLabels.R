@@ -5,7 +5,7 @@
 #'
 #' @description LimeSurvey offers the option to export survey result data as an R data frame. Variable values are
 #'  stored as response codes. This function assigns value labels for each variable. Overall, for most variable types
-#'  this means to convert the corresponding column and its values to a \code{factor} variable. Except for numberic,
+#'  this means to convert the corresponding column and its values to a \code{factor} variable. Except for numeric,
 #'  date and different open text fields (short, middle and long), all LimeSurvey and hence question types are converted
 #'  to \code{factor}. LimeSurvey response codes are converted to factor levels while LimeSurvey response texts are assigned
 #'  to the corresponding factor labels.
@@ -15,6 +15,7 @@
 #' @param lang char language code
 #' @param other vector of length two. First entry contains LS code used for "Other" entry in variable. Second entry 
 #'  NA will lookup label for given language code, or use English label as default. See details.  
+#' @param txtcom LS label used for comments, e.g. in P quesition type: multiple choice with comments.  
 #'
 #' @details Answer labels that are "Other" with text field have their own variable names of the form "questioncode.other" and
 #' question type "!" (dropdown). 
@@ -28,16 +29,17 @@
 #'
 #' @export set_response_labels
 #'
-set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
+set_response_labels <- function(data, labels, plang, other=c("-oth-", NA), txtcom=c("comment")){
 
     # "Other" code as used by ls to indicate "other" response option
     lsOtherCode <- other[1]
     
 
-    
     # "Other" label to be used; lookup i18n entry for given language code. 
     lsOtherLabel <- if_else(is.na(other[2]), get_i18nx(other[1], plang), other[2])
     
+    # "Comment" label used by LS to indicate that a text field is related to other and contains a comment
+    lsComPattern <- paste0(txtcom[1], "\\.")
     
     # all available colnames 
     cnames <- colnames(data)
@@ -72,13 +74,19 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
         ccattr <- attributes(data[,pcode])
 
         
-        # skip columns of metadata (no qid) or
-        # variables are numerical, date or (short, mid, long) text questions no factor assigned
+        # skip columns and use cell entries "as is". This applies to differnt LS question types: 
+        # metadata columns (which have no qid) 
+        # numerical, date or (short, mid, long) text questions. 
         if (is.null(pqid) | qtype %in% c("skip", "N", "D", "S", "T", "U")) next
+        
+        # Multiple Choice with comment has qtype="P" and uses two fields, the multiple choice 
+        # and the second input field which is a text field. Both appear as "P" however. We skip
+        # and use plain text only if it is the comment part. 
+        if (qtype == "P" & stringr::str_detect(pcode, lsComPattern)) next
 
         
         # Multiple choice question has no labels, just 0,1 ("not check" or "checked", NA)
-        if (qtype == "M"){
+        if (qtype == "M" | qtype == "P"){
             answers <- data.frame(acode=c(0,1), 
                                   atxt=c(get_i18nx("not-checked", plang), get_i18nx("checked", plang)), 
                                   stringsAsFactors = F)
@@ -117,6 +125,7 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA)){
         #ccattr <- c(ccattr, attributes(data[,pcode]))
         
         attributes(data[,pcode]) <- c(ccattr, attributes(data[,pcode]))
+        
 
     }
 

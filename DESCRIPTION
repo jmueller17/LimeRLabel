@@ -1,7 +1,7 @@
 Package: LimeRLabel
 Type: Package
 Title: Label LimeSurvey R Data Frame
-Version: 0.6.5
+Version: 0.6.7
 Author: Jörg Müller
 Maintainer: Jörg Müller <jmuller@uoc.edui>
 Description: LimeRLabel faciliates importing and labelling LimeSurvey result data into R.
