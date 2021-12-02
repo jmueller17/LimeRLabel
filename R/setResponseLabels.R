@@ -77,7 +77,7 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA), txtco
         # skip columns and use cell entries "as is". This applies to differnt LS question types: 
         # metadata columns (which have no qid) 
         # numerical, date or (short, mid, long) text questions. 
-        if (is.null(pqid) | qtype %in% c("skip", "N", "D", "S", "T", "U")) next
+        if (is.null(pqid) | qtype %in% c("skip", "N", "D", "S", "T", "U", "Q")) next
         
         # Multiple Choice with comment has qtype="P" and uses two fields, the multiple choice 
         # and the second input field which is a text field. Both appear as "P" however. We skip
