@@ -68,7 +68,11 @@ set_response_labels <- function(data, labels, plang, other=c("-oth-", NA), txtco
         qother <-  attr(data[,pcode], "lsother")
 
         # in case of metadata columns, skip factor conversion
-        qtype <- if_else(is.null(qtype), "skip", qtype)
+        #qtype <- if_else(is.null(qtype), "skip", qtype)
+        
+        if (is.null(qtype)){
+            qtype <- "skip"
+        }
         
         #save all attributes 
         ccattr <- attributes(data[,pcode])
